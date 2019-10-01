@@ -1,9 +1,16 @@
 package ru.avalon.java.ocpjp.labs;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Лабораторная работа №3
@@ -22,9 +29,7 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws SQLException {
-        /*
-         * TODO #01 Подключите к проекту все библиотеки, необходимые для соединения с СУБД.
-         */
+
         try (Connection connection = getConnection()) {
             ProductCode code = new ProductCode("MO", 'N', "Movies");
             code.save(connection);
@@ -55,11 +60,8 @@ public class Main {
      * 
      * @return URL в виде объекта класса {@link String}
      */
-    private static String getUrl() {
-        /*
-         * TODO #02 Реализуйте метод getUrl
-         */
-        throw new UnsupportedOperationException("Not implemented yet!");
+    private static String getUrl(Properties properties) {
+        return properties.getProperty("url");
     }
     /**
      * Возвращает параметры соединения
@@ -68,10 +70,14 @@ public class Main {
      * password
      */
     private static Properties getProperties() {
-        /*
-         * TODO #03 Реализуйте метод getProperties
-         */
-        throw new UnsupportedOperationException("Not implemented yet!");
+        File file = new File("src/res/database.properties");
+        Properties properties = new Properties();
+        try {
+            properties.load(new FileReader(file));
+        } catch (IOException ex) {
+            throw new IllegalStateException("Database config not found!", ex);
+        }
+        return properties;
     }
     /**
      * Возвращает соединение с базой данных Sample
@@ -80,10 +86,14 @@ public class Main {
      * @throws SQLException 
      */
     private static Connection getConnection() throws SQLException {
-        /*
-         * TODO #04 Реализуйте метод getConnection
-         */
-        throw new UnsupportedOperationException("Not implemented yet!");
+        Properties properties = getProperties();
+        Connection connection = DriverManager.
+                getConnection(
+                        properties.getProperty("url"), 
+                        properties.getProperty("user"), 
+                        properties.getProperty("password")
+                );
+        return connection;
     }
     
 }
